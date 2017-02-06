@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>megas tree of proffes</title>
+  </head>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+#field{
+background-color: #666;
+width: 1200px;
+height: 600px;
+float: left;
+
+}
+
+ .element {
+margin: 1px;
+border: 1px dotted red;
+background-color: #fff;
+width: 130px;
+height: 128px;
+float: left;
+}
+
+.draggable {
+  cursor: pointer;
+}
+  </style>
+  <body>
+
+    <div id="field">
+    </div>
+      <div class="draggable element" id="item1">1</div>
+      <div class="draggable element" id="item2">2</div>
+      <div class="draggable element" id="item3">3</div>
+      <div class="draggable element" id="item4">4</div>
+      <div class="draggable element" id="item5">5</div>
+      <div class="draggable element" id="item6">6</div>
+
+<img src="http://placehold.it/130x128" class="draggable">
+
+<div style="clear:both"></div>
+
+
+<script>
+//use event
+document.onmousedown = function(e) {
+
+  var elementDrag = e.target;
+
+  if (!elementDrag.classList.contains('draggable')) return;
+
+  var coords, shiftX, shiftY;
+  //e.clientX,Y catch coordinats from client
+  startDrag(e.clientX, e.clientY);
+
+  document.onmousemove = function(e) {
+    moveAt(e.clientX, e.clientY);
+  };
+
+  elementDrag.onmouseup = function() {
+    finishDrag();
+  };
+
+
+  function startDrag(clientX, clientY) {
+  //  getBoundingClientRect() - this method returns the size of an element and its position relative to the viewport.
+    shiftX = clientX - elementDrag.getBoundingClientRect().left;
+    shiftY = clientY - elementDrag.getBoundingClientRect().top;
+
+    elementDrag.style.position = 'fixed';
+
+    document.body.appendChild(elementDrag);
+
+    moveAt(clientX, clientY);
+  };
+
+  function finishDrag() {
+    // if drag is finished change position from fixed to absolute
+    elementDrag.style.top = parseInt(elementDrag.style.top) + pageYOffset + 'px';
+    elementDrag.style.position = 'absolute';
+
+    document.onmousemove = null;
+    elementDrag.onmouseup = null;
+  }
+
+  function moveAt(clientX, clientY) {
+    // get new coordinats
+    var newX = clientX - shiftX;
+    var newY = clientY - shiftY;
+
+
+    //new bottom
+    var newBottom = newY + elementDrag.offsetHeight;
+        //console.log(newBottom);
+
+    if (newBottom > document.documentElement.clientHeight) {
+      //
+      var docBottom = document.documentElement.getBoundingClientRect().bottom;
+      console.log(docBottom);
+      var scrollY = Math.min(docBottom - newBottom, 1);
+
+      //
+
+      if (scrollY < 0) scrollY = 0;
+      window.scrollBy(1, scrollY);
+
+
+      newY = Math.min(newY, document.documentElement.clientHeight - elementDrag.offsetHeight);
+    }
+
+
+
+    if (newY < 0) {
+
+      var scrollY = Math.min(-newY, 10);
+      if (scrollY < 0) scrollY = 0;
+
+      window.scrollBy(0, -scrollY);
+      newY = Math.max(newY, 0);
+    }
+
+
+      if (newX < 0) newX = 0;
+      if (newX > document.documentElement.clientWidth - elementDrag.offsetHeight) {
+      newX = document.documentElement.clientWidth - elementDrag.offsetHeight;
+    }
+
+            elementDrag.style.left = newX + 'px';
+            elementDrag.style.top = newY + 'px';
+  }
+
+  // cancel text selecting
+  return false;
+}
+</script>
+  </body>
+</html>
